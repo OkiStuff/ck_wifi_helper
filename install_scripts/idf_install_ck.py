@@ -45,10 +45,10 @@ def main() -> None:
     log_method_call(os.mkdir, path="ck_wifi_helper")
     log_method_call(func=os.chdir, path="ck_wifi_helper")
 
-    log_method_call(os.mkdir, path="include")
-    log_method_call(os.chdir, path="include")
+    #log_method_call(os.mkdir, path="include")
+    #log_method_call(os.chdir, path="include")
 
-    log_method_call(os.mkdir, path="ck_wifi_helper")
+    #log_method_call(os.mkdir, path="ck_wifi_helper")
 
     for header in HEADER_FILES:
         header_path: Path = Path(f'{ck_path}/include/ck_wifi_helper/{header}')
@@ -56,7 +56,7 @@ def main() -> None:
             print(f"ERROR: {header_path} does not exist!")
             exit(-1)
 
-        log_method_call(shutil.copyfile, src=header_path, dst=str(Path("./ck_wifi_helper/wifi.h")))
+        log_method_call(shutil.copyfile, src=header_path, dst=str(Path("./wifi.h")))
 
 if __name__ == "__main__":
     main()
