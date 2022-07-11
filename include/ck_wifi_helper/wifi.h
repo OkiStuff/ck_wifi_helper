@@ -89,16 +89,16 @@ static inline void ck_event_data_init();
 static void ck_callback_wifi_event(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 static void ck_callback_ip_event(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 
-esp_err_t ck_connect_wifi(const char* ssid, const char* password, ck_wifi_auth_mode_t wifi_auth_mode);
+esp_err_t ck_connect_wifi(const char ssid[64], const char password[64], ck_wifi_auth_mode_t wifi_auth_mode);
 
-#define CK_WIFI_HELPER_IMPLEMENTION
+#ifdef CK_WIFI_HELPER_IMPLEMENTION
 
 static inline void ck_event_data_init()
 {
     ck_wifi_event_data.retry_num = 0;
 }
 
-static void wifi_event_handler(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
+static void ck_callback_wifi_event(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)
 {
     if (event_base == WIFI_EVENT && event_id == WIFI_EVENT_STA_START)
     {
@@ -124,7 +124,7 @@ static void ck_callback_ip_event(void* arg, esp_event_base_t event_base, int32_t
 {
     if (event_base == IP_EVENT && event_id == IP_EVENT_STA_GOT_IP)
     {
-        ip_event_got_ip_t* event = (ip_event_got_ip*)(event_data);
+        ip_event_got_ip_t* event = (ip_event_got_ip_t*)(event_data);
         ESP_LOGI(CK_WIFI_HELPER_TAG_NAME, "STA IP: " IPSTR, IP2STR(&event->ip_info.ip));
 
         ck_wifi_event_data.retry_num = 0;
@@ -132,7 +132,7 @@ static void ck_callback_ip_event(void* arg, esp_event_base_t event_base, int32_t
     }
 }
 
-esp_err_t ck_connect_wifi(const char* ssid, const char* password, ck_wifi_auth_mode_t wifi_auth_mode)
+esp_err_t ck_connect_wifi(const char ssid[33], const char password[64], ck_wifi_auth_mode_t wifi_auth_mode)
 {
     int status = CK_WIFI_FAILURE;
 
@@ -154,16 +154,13 @@ esp_err_t ck_connect_wifi(const char* ssid, const char* password, ck_wifi_auth_m
 
     // Start the Wifi //
 
-    wifi_config_t wifi_config = (wifi_config_t)
-    {
-        .sta =
-        {
+    wifi_config_t wifi_config = {
+        .sta = {
             .ssid = ssid,
             .password = password,
             .threshold.authmode = (wifi_auth_mode_t)(wifi_auth_mode),
 
-            .pmf_cfg =
-            {
+            .pmf_cfg = {
                 .capable = 1,
                 .required = 0
             }
