@@ -89,7 +89,7 @@ static inline void ck_event_data_init();
 static void ck_callback_wifi_event(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 static void ck_callback_ip_event(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 
-esp_err_t ck_connect_wifi(const char* ssid, const char* password, ck_wifi_auth_mode_t wifi_auth_mode);
+esp_err_t ck_connect_wifi(const char ssid[], const char password[], ck_wifi_auth_mode_t wifi_auth_mode);
 
 #ifdef CK_WIFI_HELPER_IMPLEMENTION
 
@@ -132,7 +132,7 @@ static void ck_callback_ip_event(void* arg, esp_event_base_t event_base, int32_t
     }
 }
 
-esp_err_t ck_connect_wifi(const char* ssid, const char* password, ck_wifi_auth_mode_t wifi_auth_mode)
+esp_err_t ck_connect_wifi(const char ssid[], const char password[], ck_wifi_auth_mode_t wifi_auth_mode)
 {
     int status = CK_WIFI_FAILURE;
 
@@ -156,8 +156,8 @@ esp_err_t ck_connect_wifi(const char* ssid, const char* password, ck_wifi_auth_m
 
     wifi_config_t wifi_config = {
         .sta = {
-            .ssid = *ssid,
-            .password = *password,
+            .ssid = ssid,
+            .password = password,
             .threshold.authmode = (wifi_auth_mode_t)(wifi_auth_mode),
 
             .pmf_cfg = {
