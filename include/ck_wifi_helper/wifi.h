@@ -60,6 +60,14 @@
     #define CK_MAX_FAILURES 10
 #endif
 
+#ifndef CK_ENV_WIFI_SSID
+    #error "WiFi SSID not defined..."
+#endif
+
+#ifndef CK_ENV_WIFI_PASSWORD
+    #error "WiFi Password not defined..."
+#endif
+
 typedef struct ck_wifi_helper_data_t
 {
     EventGroupHandle_t wifi_event_group;
@@ -89,7 +97,7 @@ static inline void ck_event_data_init();
 static void ck_callback_wifi_event(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 static void ck_callback_ip_event(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data);
 
-esp_err_t ck_connect_wifi(const char* ssid, const char* password, ck_wifi_auth_mode_t wifi_auth_mode);
+esp_err_t ck_connect_wifi(ck_wifi_auth_mode_t wifi_auth_mode);
 
 #ifdef CK_WIFI_HELPER_IMPLEMENTION
 
@@ -132,7 +140,7 @@ static void ck_callback_ip_event(void* arg, esp_event_base_t event_base, int32_t
     }
 }
 
-esp_err_t ck_connect_wifi(const char* ssid, const char* password, ck_wifi_auth_mode_t wifi_auth_mode)
+esp_err_t ck_connect_wifi(ck_wifi_auth_mode_t wifi_auth_mode)
 {
     int status = CK_WIFI_FAILURE;
 
@@ -155,7 +163,9 @@ esp_err_t ck_connect_wifi(const char* ssid, const char* password, ck_wifi_auth_m
     // Start the Wifi //
 
     wifi_config_t wifi_config = {
-        .sta = {    
+        .sta = {
+            .ssid = CK_ENV_WIFI_SSID;
+            .password = CK_EVN_WIFI_PASSWORD;
             .threshold.authmode = (wifi_auth_mode_t)(wifi_auth_mode),
 
             .pmf_cfg = {
@@ -164,9 +174,6 @@ esp_err_t ck_connect_wifi(const char* ssid, const char* password, ck_wifi_auth_m
             }
         }
     };
-
-    wifi_config.sta.ssid = *ssid;
-    wifi_config.sta.password = *password;
 
     ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA)); // set wifi controller to be station
     ESP_ERROR_CHECK(esp_wifi_set_config(WIFI_IF_STA, &wifi_config)); // set wifi config

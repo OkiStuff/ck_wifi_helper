@@ -37,8 +37,8 @@ First, let's create a `wifi_config.h` header
 #ifndef WIFI_CONFIG_H
 #define WIFI_CONFIG_H
 
-#define WIFI_CONFIG_SSID "your-ssid"
-#define WIFI_CONFIG_PASSWORD "your-password"
+#define CK_ENV_WIFI_SSID "your-ssid"
+#define CK_ENV_WIFI_PASSWORD "your-password"
 
 #endif // WIFI_CONFIG_H
 ```
@@ -68,7 +68,7 @@ void app_main(void)
 
     ESP_ERROR_CHECK(nvs_flash_status);
 
-    wifi_status = ck_connect_wifi(WIFI_CONFIG_SSID, WIFI_CONFIG_PASSWORD, CK_WIFI_AUTH_WPA2_PSK);
+    wifi_status = ck_connect_wifi(CK_WIFI_AUTH_WPA2_PSK);
     if (wifi_status != CK_WIFI_SUCCESS)
     {
         ESP_LOGI(TAG, "Failed to connect to access point, exiting...");
@@ -158,7 +158,7 @@ void app_main(void)
 
     ESP_ERROR_CHECK(nvs_flash_status);
 
-    wifi_status = ck_connect_wifi(WIFI_CONFIG_SSID, WIFI_CONFIG_PASSWORD, CK_WIFI_AUTH_WPA2_PSK);
+    wifi_status = ck_connect_wifi(CK_WIFI_AUTH_WPA2_PSK);
     if (wifi_status != CK_WIFI_SUCCESS)
     {
         ESP_LOGI(TAG, "Failed to connect to access point, exiting...");
@@ -179,6 +179,12 @@ Macro representing a non-successful/failed connection to a WiFi access point
 
 `#define CK_MAX_FAILURES 10` <br />
 Macro representing the amount of non-sccessful connections to a WiFi access point until failure. Can be changed by defining macro before inclusion of library.
+
+`#define CK_ENV_WIFI_SSID` <br />
+Undefined macro representing WiFi access point SSID. Set by user
+
+`#define CK_ENV_WIFI_PASSWORD` <br />
+Undefined macro representing WiFi access point password. Set by user
 
 `typedef struct ck_wifi_helper_data_t ck_wifi_helper_data_t` <br />
 Internal structure with important data.
@@ -210,5 +216,5 @@ Internal callback function for WiFi connect event
 `static void ck_callback_ip_event(void* arg, esp_event_base_t event_base, int32_t event_id, void* event_data)` <br />
 Internal callback functon for IP got event
 
-`esp_err_t ck_connect_wifi(const char* ssid, const char* password, ck_wifi_auth_mode_t wifi_auth_mode)` <br />
+`esp_err_t ck_connect_wifi(ck_wifi_auth_mode_t wifi_auth_mode)` <br />
 Abstraction function to connect to WiFi access point.
